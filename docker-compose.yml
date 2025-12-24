@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  mcp-minio:
+    image: yukojiangjiang/minio-mcp:v2.0.0
+    container_name: minio-mcp
+    ports:
+      - "8050:8050"
+    environment:
+      # MinIO 已存在，直接指向
+      MINIO_ENDPOINT: 192.168.1.37:9100
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      MINIO_BUCKET: snapshoot
+      MINIO_SECURE: "false"
+
+      # 返回给 LLM 的访问地址（必须是 LLM 可访问的）
+      PUBLIC_BASE_URL: http://192.168.1.37:9100
+    restart: unless-stopped

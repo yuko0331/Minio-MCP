@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "minio-image-server": {
+      "transport": "streamable-http",
+      "url": "http://localhost:8050/mcp",
+      "description": "MinIO image upload server"
+    }
+  }
+}
+
