@@ -10,6 +10,7 @@
 | **upload_file** | 上传本地文件 | 临时文件持久化、日志文件 |
 | **upload_from_url** | URL 转存 | 镜像远程图片、备份网络文件 |
 | **list_files** | 列出文件 | 浏览已上传内容、检查文件 |
+| **generate_random_string** | 生成随机字符串 | 唯一文件名、临时标识 |
 
 ## 🚀 核心特点
 
@@ -232,6 +233,54 @@ Total: 2 files
 """
 ```
 
+---
+
+### 5️⃣ generate_random_string - 生成随机字符串
+
+**用途：** 生成指定长度的随机字符串，基于 UUID。
+
+**参数：**
+```python
+generate_random_string(
+    length: int = 16  # 字符串长度（1-32），默认 16
+)
+```
+
+**示例：**
+```python
+# 生成默认 16 位随机字符串
+generate_random_string()
+# 返回: ✅ Random string generated: a1b2c3d4e5f6g7h8
+
+# 生成 8 位随机字符串
+generate_random_string(length=8)
+# 返回: ✅ Random string generated: a1b2c3d4
+
+# 生成 24 位随机字符串
+generate_random_string(length=24)
+# 返回: ✅ Random string generated: a1b2c3d4e5f6g7h8i9j0k1l2
+```
+
+**常见场景：**
+- 🏷️ 生成唯一文件名
+- 🔑 创建临时标识符
+- 🎲 生成测试数据
+- 📛 批量命名文件
+
+**实际应用：**
+```python
+# 为截图生成唯一文件名
+random_id = generate_random_string(8)
+filename = f"screenshot_{random_id}.png"
+upload_image(base64_data="...", filename=filename)
+# 结果: screenshot_a1b2c3d4.png
+
+# 批量生成唯一文件名
+for i in range(5):
+    unique_name = generate_random_string(12)
+    # 用于文件命名或标识
+```
+
 ## 🔧 配置 AI 客户端
 
 ### Claude Desktop
@@ -293,6 +342,25 @@ curl -X POST http://localhost:8050/mcp \
 
 ## 📚 使用示例
 
+### 完整工作流程
+
+```python
+# 1. 生成唯一文件名
+random_id = generate_random_string(8)
+filename = f"test_{random_id}.png"
+
+# 2. 使用 Playwright 截图并上传
+screenshot_result = browser_take_screenshot(filename="page.png", fullPage=True)
+upload_image(
+    base64_data=screenshot_result["data"],
+    filename=filename,
+    content_type=screenshot_result["mimeType"]
+)
+
+# 3. 查看已上传的文件
+list_files()
+```
+
 ### 与 Playwright MCP 集成
 
 ```python
@@ -314,18 +382,47 @@ upload_image(
 ### 批量处理文件
 
 ```python
-# 1. 列出当前文件
+# 1. 生成多个唯一文件名
+filenames = []
+for i in range(3):
+    random_id = generate_random_string(8)
+    filenames.append(f"report_{random_id}.pdf")
+
+# 2. 列出当前文件
 list_files()
 
-# 2. 上传多个本地文件
-upload_file(file_path="/tmp/report1.pdf")
-upload_file(file_path="/tmp/report2.pdf")
+# 3. 上传多个本地文件
+for filename in filenames:
+    upload_file(file_path=f"/tmp/{filename}")
 
-# 3. 从 URL 镜像文件
+# 4. 从 URL 镜像文件
 upload_from_url(url="https://example.com/data.csv")
 
-# 4. 再次列出验证
+# 5. 再次列出验证
 list_files()
+```
+
+### 高级用例：动态文件名生成
+
+```python
+# 场景：为每次测试运行生成唯一截图
+test_run_id = generate_random_string(12)
+
+# 多个测试步骤的截图
+screenshots = [
+    f"login_{test_run_id}.png",
+    f"dashboard_{test_run_id}.png",
+    f"logout_{test_run_id}.png"
+]
+
+# 依次上传
+for filename in screenshots:
+    # 执行截图并上传
+    result = browser_take_screenshot()
+    upload_image(base64_data=result["data"], filename=filename)
+
+# 列出这次测试的所有截图
+list_files(prefix=f"{test_run_id}")
 ```
 
 ## 🔍 故障排查

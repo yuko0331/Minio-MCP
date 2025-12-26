@@ -20,12 +20,14 @@ mcp = FastMCP(
     2. upload_file - Upload a local file from the filesystem to MinIO and get a public URL
     3. upload_from_url - Download a file from URL and upload to MinIO (mirror/backup remote files)
     4. list_files - List all files in the MinIO bucket
+    5. generate_random_string - Generate a random UUID-based string (useful for unique filenames)
     
     Common use cases:
     - Save Playwright/browser screenshots to permanent storage (use upload_image)
     - Upload temporary local files to cloud storage (use upload_file)
     - Mirror/backup files from other servers by URL (use upload_from_url)
     - Browse uploaded files (use list_files)
+    - Generate unique identifiers for filenames (use generate_random_string)
     
     All uploaded files will be accessible via public URLs.
     """,
@@ -401,6 +403,53 @@ def upload_from_url(
         import traceback
         error_detail = traceback.format_exc()
         return f"❌ Upload from URL failed: {str(e)}\n\nDetails:\n{error_detail}"
+
+
+@mcp.tool()
+def generate_random_string(length: int = 16) -> str:
+    """
+    Generate a random string using UUID.
+    
+    USE THIS TOOL WHEN:
+    - You need a unique identifier for filenames
+    - You want to generate random tokens or keys
+    - You need a random string for testing or naming
+    - You want to create unique identifiers
+    
+    Args:
+        length: Length of the random string (1-32). Default is 16.
+                The string will be lowercase hexadecimal characters.
+    
+    Returns:
+        A random string of the specified length.
+    
+    Example:
+    1. Call: generate_random_string(length=16)
+    2. Get: "a1b2c3d4e5f6g7h8"
+    
+    Use cases:
+    - Generate unique filenames: f"screenshot_{generate_random_string(8)}.png"
+    - Create temporary identifiers
+    - Generate test data
+    """
+    try:
+        # 验证长度参数
+        if not isinstance(length, int):
+            return f"❌ Error: length must be an integer, got {type(length).__name__}"
+        
+        if length < 1:
+            return "❌ Error: length must be at least 1"
+        
+        if length > 32:
+            return "❌ Error: length cannot exceed 32"
+        
+        # 生成随机字符串
+        random_string = uuid.uuid4().hex[:length]
+        
+        return f"✅ Random string generated: {random_string}"
+    
+    except Exception as e:
+        return f"❌ Error generating random string: {str(e)}"
 
 
 # ===== 启动 MCP Server =====
