@@ -317,12 +317,12 @@ docker push yukojiangjiang/minio-mcp:v2.0.0
 # 运行容器
 docker run -d \
   -p 8050:8050 \
-  -e MINIO_ENDPOINT="192.168.1.37:9100" \
+  -e MINIO_ENDPOINT="192.168.1.55:9100" \
   -e MINIO_ACCESS_KEY="minioadmin" \
   -e MINIO_SECRET_KEY="minioadmin" \
   -e MINIO_BUCKET="snapshoot" \
-  -e PUBLIC_BASE_URL="http://192.168.1.37:9100" \
-  yukojiangjiang/minio-mcp:v2.0.0
+  -e PUBLIC_BASE_URL="http://192.168.1.55:9100" \
+  yukojiangjiang/minio-mcp:v2.0.2
 ```
 
 ## 🧪 测试 API
